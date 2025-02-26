@@ -335,3 +335,40 @@ fun SharedMessageCard(
         }
     }
 }
+
+@Composable
+fun ChatMessagesList(messages: List<Message>) {
+    var messageText by remember { mutableStateOf("") }
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f), // Теперь weight применяется корректно в Column
+            reverseLayout = false, // Порядок сверху вниз
+            contentPadding = PaddingValues(8.dp)
+        ) {
+            items(messages.size) { index ->
+                val message = messages[index]
+                when (message) {
+                    is SharedMessage -> SharedMessageCard(sharedMessage = message)
+                    else -> ChatBubble(message = message)
+                }
+            }
+        }
+
+        InputField( // Переместили внутрь Column
+            messageText = messageText,
+            onMessageChange = { messageText = it },
+            onSendClick = { /*...*/ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .imePadding()
+                .zIndex(1f)
+        )
+    }
+}
+
+
