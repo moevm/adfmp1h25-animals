@@ -70,3 +70,57 @@ fun ChatScreen(onBack: () -> Unit = {}) {
         }
     }
 }
+
+@Composable
+fun TopBarChat(onBack: () -> Unit) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .zIndex(1f),
+        color = DarkBeige,
+        shadowElevation = 16.dp,
+        tonalElevation = 0.dp,
+        shape = RectangleShape
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Иконка назад
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.size(40.dp) // Увеличиваем размер кнопки
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.left_back),
+                    contentDescription = "Back",
+                    modifier = Modifier.size(32.dp) // Увеличиваем размер иконки
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Круглый аватар
+            Image(
+                painter = painterResource(id = R.drawable.max_avatar), // Замените на вашу картинку
+                contentDescription = "Max Avatar",
+                modifier = Modifier
+                    .size(64.dp)  // Устанавливаем размер изображения
+                    .clip(CircleShape),  // Обрезаем в круг
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Текст с именем
+            Text(
+                text = "Максим",
+                style = ExtraBoldGreen,
+                fontSize = 24.sp
+            )
+        }
+    }
+}
