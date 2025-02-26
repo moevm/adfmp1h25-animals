@@ -285,3 +285,52 @@ fun BirdCard(
         }
     }
 }
+
+@Composable
+fun TopBar(onAboutClick: () -> Unit, onProfileClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(start = 7.dp, end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        IconButton(
+            onClick = {
+                Log.d("CatalogScreen", "Info button clicked")
+                onAboutClick()
+            },
+            modifier = Modifier.size(60.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.info),
+                contentDescription = "Информация",
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        Image(
+            painter = painterResource(id = R.drawable.logo_catalog),
+            contentDescription = "Логотип",
+            modifier = Modifier.size(100.dp),
+            contentScale = ContentScale.Fit
+        )
+
+        IconButton(
+            onClick = {
+                Log.d("CatalogScreen", "Profile button clicked")
+                onProfileClick()
+            },
+            modifier = Modifier.size(70.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.profile_avatar),
+                contentDescription = "Профиль",
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+            )
+        }
+    }
+}
