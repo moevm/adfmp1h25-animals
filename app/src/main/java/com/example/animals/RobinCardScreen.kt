@@ -229,3 +229,44 @@ fun TopBarCard(onBackClick: () -> Unit, onProfileClick: () -> Unit) {
         }
     }
 }
+
+@Composable
+fun MapShortcut() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .padding(horizontal = 16.dp, vertical = 16.dp) // Отступы по бокам
+    ) {
+        AndroidView(
+            factory = { context ->
+                Configuration.getInstance().load(
+                    context,
+                    context.getSharedPreferences("osm_prefs", android.content.Context.MODE_PRIVATE)
+                )
+                MapView(context).apply {
+                    setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK)
+                    setMultiTouchControls(true)
+                    controller.setZoom(12.0)
+                    controller.setCenter(GeoPoint(55.751244, 37.618423)) // Координаты Москвы
+
+                    // Ограничение области масштабирования внутри видимой зоны
+                    this.setScrollableAreaLimitDouble(
+                        org.osmdroid.util.BoundingBox(
+                            55.85, 37.75, // Северо-западный угол
+                            55.65, 37.49  // Юго-восточный угол
+                        )
+                    )
+
+                    // Ограничения на масштаб
+                    this.minZoomLevel = 3.0
+                    this.maxZoomLevel = 18.0
+                }
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .clipToBounds()
+//                .clip(CircleShape) // Опционально, если хотите сделать закругленные углы
+        )
+    }
+}
