@@ -124,3 +124,80 @@ fun TopBarChat(onBack: () -> Unit) {
         }
     }
 }
+
+@Composable
+fun InputField(
+    messageText: String,
+    onMessageChange: (String) -> Unit,
+    onSendClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(elevation = 8.dp),
+        color = LightBeige
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .navigationBarsPadding()
+                .imePadding(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextField(
+                value = messageText,
+                onValueChange = onMessageChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp)
+                    .focusRequester(focusRequester)
+                    .onFocusChanged {
+                        if (it.isFocused) keyboardController?.show()
+                    },
+                placeholder = {
+                    if (messageText.isEmpty()) {
+                        Text(
+                            text = "Сообщение",
+                            style = InputMediumGreen.copy(fontSize = 18.sp)
+                        )
+                    }
+                },
+                textStyle = InputMediumGreen.copy(
+                    fontSize = 18.sp,
+                    color = DarkGreen
+                ),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = DarkGreen,
+                    unfocusedTextColor = DarkGreen,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                singleLine = true
+            )
+
+            IconButton(
+                onClick = onSendClick,
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.send),
+                    contentDescription = "Отправить",
+                    tint = DarkGreen
+                )
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+}
