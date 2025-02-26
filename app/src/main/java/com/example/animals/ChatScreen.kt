@@ -201,3 +201,61 @@ fun InputField(
         keyboardController?.show()
     }
 }
+
+// Основной класс сообщения
+open class Message(
+    val text: String,
+    val isFromMe: Boolean,
+    val timestamp: String
+)
+
+// Класс для сообщения с постом (shared message)
+data class SharedMessage(
+    val postTitle: String,
+    val postImage: Int,
+    val sharedTimestamp: String = "",
+    val repostsCount: Int,
+    val isFromMeShared: Boolean,
+) : Message(text = postTitle, isFromMe = isFromMeShared, timestamp = sharedTimestamp)
+
+
+@Composable
+fun ChatBubble(
+    message: Message,
+    modifier: Modifier = Modifier
+) {
+    val alignment = if (message.isFromMe) Alignment.End else Alignment.Start
+    val background = if (message.isFromMe) Color(0xFFF9EBC7) else Color(0xFFF5E5BD)
+    val shape = RoundedCornerShape(16.dp)
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .align(if (message.isFromMe) Alignment.CenterEnd else Alignment.CenterStart)
+                .widthIn(max = screenWidth * 0.75f) // Ограничиваем ширину 75% экрана
+                .shadow(4.dp, shape = shape)
+                .background(background, shape)
+                .padding(12.dp)
+        ) {
+            Text(
+                text = message.text,
+                style = InputMediumGreen,
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = message.timestamp,
+                style = InputMediumGreen,
+                fontSize = 12.sp,
+                modifier = Modifier.align(Alignment.End)
+            )
+        }
+    }
+}
