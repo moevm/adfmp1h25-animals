@@ -402,3 +402,46 @@ fun InfoRow(label: String, value: String) {
         )
     }
 }
+
+@Composable
+fun SearchBarUsers(query: String, onQueryChange: (String) -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(46.dp)
+    ) {
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            textStyle = InputMediumGreen.copy(fontSize = 18.sp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(LightBeige, shape = RoundedCornerShape(25.dp))
+                .padding(horizontal = 16.dp),
+            decorationBox = { innerTextField ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.search_icon),
+                        contentDescription = "Search",
+                        modifier = Modifier.size(20.dp)
+                    )
+
+                    Box(modifier = Modifier.weight(1f)) {
+                        if (query.isEmpty()) {
+                            Text(
+                                text = "Поиск пользователя",
+                                style = InputMediumGreen.copy(color = DarkGreen.copy(alpha = 0.65f)),
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                        innerTextField()
+                    }
+                }
+            }
+        )
+    }
+}
