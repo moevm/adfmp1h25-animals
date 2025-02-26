@@ -333,3 +333,53 @@ fun ImageSlider() {
         }
     }
 }
+
+@Composable
+fun BirdInfo(onShareClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Малиновка",
+            style = ExtraBoldGreen,
+            fontSize = 24.sp,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Небольшая заметка от автора о животном",
+            style = InputMediumGreen,
+            lineHeight = 30.sp,
+            fontSize = 20.sp,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        InfoRow(label = "Автор публикации:", value = "Алексей")
+        InfoRow(label = "Тип животного:", value = "Птица")
+        InfoRow(label = "Размер животного:", value = "Маленький")
+        InfoRow(label = "Место встречи:", value = "Парк")
+        Spacer(modifier = Modifier.height(16.dp))
+        MapShortcut()
+        Spacer(modifier = Modifier.height(16.dp))
+        InfoRow(label = "Дата встречи:", value = "14.02.2024")
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Поделиться:",
+                style = BoldGreen,
+                fontSize = 20.sp
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(onClick = onShareClick) {
+                Image(
+                    painter = painterResource(id = R.drawable.share_icon),
+                    contentDescription = "Поделиться",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
+}
