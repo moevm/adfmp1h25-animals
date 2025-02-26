@@ -259,3 +259,79 @@ fun ChatBubble(
         }
     }
 }
+
+@Composable
+fun SharedMessageCard(
+    sharedMessage: SharedMessage,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.45f) // Уменьшаем ширину карточки
+                .align(if (sharedMessage.isFromMeShared) Alignment.CenterEnd else Alignment.CenterStart)
+                .shadow(4.dp, shape = RoundedCornerShape(16.dp)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // Отображаем изображение поста
+                Image(
+                    painter = painterResource(id = sharedMessage.postImage),
+                    contentDescription = "Post Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+                // Контейнер для информации о посте
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (sharedMessage.isFromMeShared) Color(0xFFF9EBC7) else Color(0xFFF5E5BD)) // Можно заменить на другой цвет фона
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        // Заголовок поста
+                        Text(
+                            text = sharedMessage.postTitle,
+                            style = SemiBoldGreen,
+                            modifier = Modifier.align(Alignment.Start)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Дата и имя пользователя, который поделился постом
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.repost_icon),
+                                    contentDescription = "Repost",
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = sharedMessage.repostsCount.toString(),
+                                    style = InputMediumGreen,
+                                    fontSize = 12.sp
+                                )
+                            }
+                            Text(
+                                text = sharedMessage.timestamp,
+                                style = InputMediumGreen,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
