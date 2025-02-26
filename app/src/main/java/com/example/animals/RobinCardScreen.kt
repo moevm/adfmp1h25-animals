@@ -383,3 +383,22 @@ fun BirdInfo(onShareClick: () -> Unit) {
         }
     }
 }
+
+@Composable
+fun InfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.padding(vertical = 4.dp)
+    ) {
+        Text(
+            text = label,
+            style = BoldGreen,
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = value,
+            style = InputMediumGreen,
+            fontSize = 20.sp,
+        )
+    }
+}
