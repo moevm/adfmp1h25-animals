@@ -82,4 +82,39 @@ fun LogInScreen(onLoginSuccess: () -> Unit, onBack: () -> Unit) {
     }
 }
 
+@Composable
+fun LoginInputField(label: String, value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 17.dp)) {
+        Text(
+            text = label,
+            fontSize = 18.sp,
+            color = Brown,
+            fontWeight = FontWeight.Light,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            textStyle = InputMediumBrown,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LightBeige, shape = RoundedCornerShape(22.dp))
+                        .padding(13.dp)
+                ) {
+                    if (value.isEmpty()) {
+                        Text(
+                            text = "user@gmail.com",
+                            style = InputMediumBrown,
+                            color = Brown.copy(alpha = 0.65f) // или любой другой цвет для плейсхолдера
+                        )
+                    }
+                    innerTextField()
 
+                }
+            }
+        )
+    }
+}
