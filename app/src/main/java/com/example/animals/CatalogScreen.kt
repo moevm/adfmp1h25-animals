@@ -125,3 +125,97 @@ fun CatalogScreen(
         }
     }
 }
+
+@Composable
+fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
+    var hasFocus by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    val isSearchActive = hasFocus || query.isNotEmpty()
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(46.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(46.dp)
+                .background(LightBeige, shape = RoundedCornerShape(25.dp))
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.search_icon),
+                    contentDescription = "Search",
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .size(20.dp)
+                )
+
+                BasicTextField(
+                    value = query,
+                    onValueChange = onQueryChange,
+                    textStyle = InputMediumGreen.copy(fontSize = 18.sp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp, end = 8.dp, top = 10.dp)
+                        .onFocusChanged { focusState ->
+                            hasFocus = focusState.isFocused
+                        }
+                        .focusRequester(focusRequester),
+                    singleLine = true,
+                    decorationBox = { innerTextField ->
+                        Box {
+
+
+                            if (query.isEmpty() && !hasFocus) {
+                                Text(
+                                    text = "Поиск",
+                                    style = InputMediumGreen,
+                                    color = LightGreen,
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
+                )
+            }
+        }
+
+        if (isSearchActive) {
+            Spacer(modifier = Modifier.width(8.dp))
+            TextButton(
+                onClick = {
+                    onQueryChange("")
+//                    isSearchActive = false
+                    focusManager.clearFocus()
+                    focusRequester.freeFocus()
+                },
+                shape = RoundedCornerShape(25.dp), // 1. Установите форму здесь
+                modifier = Modifier
+                    .background(Brown, RoundedCornerShape(25.dp)) // 2. Добавьте форму в background
+                    .clip(RoundedCornerShape(25.dp)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Brown, // 3. Используйте правильный цвет фона
+                    contentColor = LightBeige
+                )
+            ) {
+                Text(
+                    text = "Отмена",
+                    style = NormalLightBeige,
+                    fontSize = 16.sp
+                )
+            }
+        }
+    }
+}
