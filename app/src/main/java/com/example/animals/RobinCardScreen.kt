@@ -270,3 +270,66 @@ fun MapShortcut() {
         )
     }
 }
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun ImageSlider() {
+    val imageList = listOf(
+        R.drawable.robin1,
+        R.drawable.robin2,
+        R.drawable.robin3
+    )
+
+    val pagerState = rememberPagerState(
+        initialPage = Int.MAX_VALUE / 2
+    )
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HorizontalPager(
+            count = Int.MAX_VALUE,
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .padding(top = 16.dp)
+        ) { page ->
+            val actualPage = page % imageList.size
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = imageList[actualPage]),
+                    contentDescription = "Слайдер изображение",
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(200.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Row(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(imageList.size) { index ->
+                val isActive = index == (pagerState.currentPage % imageList.size)
+                Box(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .padding(4.dp)
+                        .clip(CircleShape)
+                        .background(if (isActive) DarkGreen else LightGreen)
+                )
+            }
+        }
+    }
+}
