@@ -445,3 +445,56 @@ fun SearchBarUsers(query: String, onQueryChange: (String) -> Unit) {
         )
     }
 }
+
+@Composable
+fun ShareItem(
+    userAvatar: Int, // Идентификатор ресурса аватарки
+    userName: String, // Имя пользователя
+    onSendClick: () -> Unit // Обработчик нажатия на кнопку "Отправить"
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        // Аватарка и имя пользователя
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = userAvatar),
+                contentDescription = "Аватар пользователя",
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape), // Скругление аватарки
+            contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = userName,
+                style = BoldGreen,
+                fontSize = 18.sp
+            )
+        }
+
+        // Кнопка "Отправить"
+        Button(
+            onClick = onSendClick,
+            modifier = Modifier
+                .height(36.dp)
+                .padding(horizontal = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Brown, // Цвет фона кнопки
+                contentColor = LightBeige // Цвет текста кнопки
+            )
+        ) {
+            Text(
+                text = "Отправить",
+                style = NormalLightBeige,
+                fontSize = 16.sp
+            )
+        }
+    }
+}
