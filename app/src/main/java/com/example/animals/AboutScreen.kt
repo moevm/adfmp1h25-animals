@@ -74,3 +74,51 @@ fun AboutScreen(onBackClick: () -> Unit, onProfileClick: () -> Unit) {
         }
     }
 }
+
+@Composable
+fun TopBarAbout(onBackClick: () -> Unit, onProfileClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp) // Немного увеличил высоту TopBar
+            .padding(start = 5.dp, end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        IconButton(
+            onClick = {
+                Log.d("CatalogScreen", "Info button clicked")
+                onBackClick()
+            },
+            modifier = Modifier.size(50.dp) // Увеличиваем размер кнопки
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.left_back),
+                contentDescription = "Назад",
+                modifier = Modifier.size(30.dp) // Увеличиваем саму иконку
+            )
+        }
+
+        Text(
+            text = "About",
+            style = ExtraBoldGreen,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        IconButton(
+            onClick = {
+                Log.d("CatalogScreen", "Profile button clicked")
+                onProfileClick()
+            },
+            modifier = Modifier.size(70.dp) // Увеличиваем размер кнопки
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.profile_avatar),
+                contentDescription = "Профиль",
+                modifier = Modifier
+                    .size(60.dp) // Увеличиваем саму иконку
+                    .clip(CircleShape)
+            )
+        }
+    }
+}
