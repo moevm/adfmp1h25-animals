@@ -94,4 +94,39 @@ fun SignUpScreen(onSignUpSuccess: () -> Unit, onBack: () -> Unit) {
     }
 }
 
-
+@Composable
+fun SignUpInputField(label: String, value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 17.dp)) {
+        Text(
+            text = label,
+            fontSize = 18.sp,
+            color = DarkGreen,
+            fontFamily = Manrope,
+            fontWeight = FontWeight.Light,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            textStyle = InputMediumGreen,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text), // ✅ Добавлено
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LightBeige, shape = RoundedCornerShape(22.dp))
+                        .padding(13.dp) // Паддинг внутри поля ввода
+                ) {
+                    if (value.isEmpty()) {
+                        Text(
+                            text = "user@gmail.com",
+                            style = InputMediumGreen,
+                            color = DarkGreen.copy(alpha = 0.65f) // или любой другой цвет для плейсхолдера
+                        )
+                    }
+                    innerTextField()
+                }
+            }
+        )
+    }
+}
