@@ -745,3 +745,35 @@ fun NameField(query: String, onQueryChange: (String) -> Unit) {
 
     }
 }
+
+@Composable
+fun DescriptionField(query: String, onQueryChange: (String) -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp) // Увеличенная высота для textarea
+            .background(LightBeige, shape = RoundedCornerShape(25.dp))
+            .padding(16.dp) // Отступы вокруг поля ввода
+    ) {
+        // Многострочное поле для ввода текста
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            textStyle = InputMediumGreen.copy(fontSize = 18.sp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp), // Внутренние отступы
+            maxLines = 6 // Ограничение количества строк
+        )
+
+        // Плейсхолдер
+        if (query.isEmpty()) {
+            androidx.compose.material3.Text(
+                text = "Введите описание...",
+                style = InputMediumGreen,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        }
+    }
+}
