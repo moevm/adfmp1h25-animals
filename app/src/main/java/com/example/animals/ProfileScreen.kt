@@ -825,3 +825,35 @@ fun CustomRoundRadioButton(
         }
     }
 }
+
+@Composable
+fun FilterCategoryRadio(title: String, options: List<String>, selectedOption: MutableState<String?>) {
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        Text(
+            text = title,
+            style = ExtraBoldGreen,
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        options.forEach { option ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .clickable { selectedOption.value = option }
+            ) {
+                CustomRoundRadioButton(
+                    selected = selectedOption.value == option,
+                    onSelect = { selectedOption.value = option }
+                )
+                Text(
+                    text = option,
+                    modifier = Modifier.padding(start = 8.dp),
+                    style = InputMediumGreen,
+                    fontSize = 18.sp
+                )
+            }
+        }
+    }
+}
