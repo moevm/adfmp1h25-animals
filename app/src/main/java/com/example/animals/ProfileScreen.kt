@@ -614,3 +614,29 @@ fun MessagesSection(onItemClick: () -> Unit) {
         MessageItem(avatarRes = R.drawable.fernando_avatar, userName = "Федор", onClick = onItemClick)
     }
 }
+
+@Composable
+fun MessageItem(avatarRes: Int, userName: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = avatarRes),
+            contentDescription = "Avatar",
+            modifier = Modifier
+                .size(70.dp)  // Устанавливаем размер изображения
+                .clip(CircleShape),  // Обрезаем в круг
+            contentScale = ContentScale.Crop  // Обрезаем изображение, чтобы оно заполнило круг
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = userName,
+            style = ExtraBoldGreen,
+            fontSize = 24.sp
+        )
+    }
+}
