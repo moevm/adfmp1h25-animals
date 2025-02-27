@@ -713,3 +713,35 @@ fun ImagePickerField(
         }
     }
 }
+
+@Composable
+fun NameField(query: String, onQueryChange: (String) -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(46.dp)
+            .background(LightBeige, shape = RoundedCornerShape(25.dp)) // Цвет фона и закругленные углы
+            .padding(start = 16.dp, end = 16.dp) // Отступы внутри поля поиска
+    ) {
+        // Поле для ввода текста
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            textStyle = InputMediumGreen.copy(fontSize = 18.sp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, top = 8.dp) // Отступ от иконки
+        )
+
+        // Плейсхолдер
+        if (query.isEmpty()) {
+            androidx.compose.material3.Text(
+                text = "Название животного",
+                style = InputMediumGreen,
+                modifier = Modifier.padding(start = 8.dp, top = 10.dp)
+            )
+        }
+
+    }
+}
