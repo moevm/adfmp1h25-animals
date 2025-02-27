@@ -84,7 +84,8 @@ fun AppNavigator() {
         Screen.Profile -> ProfileScreen(
             onBack = { currentScreen = Screen.Catalog },
             onRobinCardClick = { currentScreen = Screen.RobinCard },
-            onChatClick = { currentScreen = Screen.Chat }
+            onChatClick = { currentScreen = Screen.Chat },
+            onLogout = { currentScreen = Screen.Home }
         )
         Screen.RobinCard -> RobinCardScreen(
             onBackClick = { currentScreen = Screen.Catalog },

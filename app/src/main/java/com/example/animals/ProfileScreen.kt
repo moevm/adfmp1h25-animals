@@ -64,6 +64,7 @@ fun ProfileScreen(
     onBack: () -> Unit = {},
     onRobinCardClick: () -> Unit,
     onChatClick: () -> Unit,
+    onLogout: () -> Unit
 ) {
     val sections = listOf("Статистика", "Публикации", "Новая запись", "Сообщения")
     var activeSection by remember { mutableStateOf(sections[3]) }
@@ -98,6 +99,16 @@ fun ProfileScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.left_back_brown),
                                 contentDescription = "Назад",
+                                tint = Color.Unspecified
+                            )
+                        }
+                    },
+                    actions = {
+                        // Добавляем кнопку выхода справа
+                        IconButton(onClick = onLogout) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.exit),
+                                contentDescription = "Выход",
                                 tint = Color.Unspecified
                             )
                         }
