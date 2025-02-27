@@ -137,3 +137,28 @@ fun FilterScreen(
         }
     }
 }
+
+@Composable
+fun CustomRoundCheckbox(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(20.dp) // Размер чекбокса
+            .clip(CircleShape) // Круглая форма
+            .background(if (checked) DarkGreen else Color.Transparent) // Заливка при выборе
+            .border(BorderStroke(2.dp, DarkGreen), CircleShape) // Граница
+            .clickable { onCheckedChange(!checked) }, // Обработка клика
+        contentAlignment = Alignment.Center // Центрирование иконки
+    ) {
+        if (checked) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Checked",
+                tint = LightBeige, // Цвет галочки
+                modifier = Modifier.size(16.dp) // Размер галочки
+            )
+        }
+    }
+}
