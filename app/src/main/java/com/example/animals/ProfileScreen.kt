@@ -640,3 +640,76 @@ fun MessageItem(avatarRes: Int, userName: String, onClick: () -> Unit) {
         )
     }
 }
+
+@Composable
+fun ImagePickerField(
+    modifier: Modifier = Modifier,
+    onImagesSelected: (List<Uri>) -> Unit // Коллбек для передачи выбранных изображений
+) {
+    val context = LocalContext.current
+    var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        if (uris.size <= 5) {
+            selectedImages = uris
+            onImagesSelected(uris)
+        } else {
+            // Показать сообщение об ошибке, если выбрано больше 5 изображений
+            Toast.makeText(context, "Можно выбрать не более 5 изображений", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .background(LightGreen, RoundedCornerShape(20.dp))
+            .clickable {
+                launcher.launch("image/*") // Запуск выбора изображений
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        if (selectedImages.isEmpty()) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.add_pics),
+                    contentDescription = "Добавить фото",
+                    tint = DarkGreen,
+                    modifier = Modifier.size(40.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Добавить фото (до 5)",
+                    style = InputMediumGreen,
+                    color = DarkGreen
+                )
+            }
+        } else {
+            LazyRow(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(selectedImages.size) { index -> // Используем selectedImages.size
+                    val uri = selectedImages[index]
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            ImageRequest.Builder(LocalContext.current)
+                                .data(uri)
+                                .build()
+                        ),
+                        contentDescription = "Выбранное фото",
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(RoundedCornerShape(10.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        }
+    }
+}
