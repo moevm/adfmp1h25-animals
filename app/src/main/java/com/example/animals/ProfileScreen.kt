@@ -318,3 +318,58 @@ fun SegmentedPicker(
         }
     }
 }
+
+@Composable
+fun StatisticsContent(timeframe: String) {
+    val stats = when (timeframe) {
+        "7 дней" -> mapOf(
+            "Количество публикаций" to 4,
+            "Количество млекопитающих" to 3,
+            "Количество птиц" to 1,
+            "Количество рептилий" to 0,
+            "Количество земноводных" to 0
+        )
+        "1 месяц" -> mapOf(
+            "Количество публикаций" to 10,
+            "Количество млекопитающих" to 13,
+            "Количество птиц" to 7,
+            "Количество рептилий" to 5,
+            "Количество земноводных" to 5
+        )
+        "1 год" -> mapOf(
+            "Количество публикаций" to 100,
+            "Количество млекопитающих" to 35,
+            "Количество птиц" to 50,
+            "Количество рептилий" to 10,
+            "Количество земноводных" to 10
+        )
+        else -> emptyMap()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        stats.forEach { (label, value) ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp, horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = label,
+                    style = SemiBoldGreen,
+                    fontSize = 18.sp
+                )
+                Text(
+                    text = "$value",
+                    style = SemiBoldGreen,
+                    fontSize = 18.sp
+                )
+            }
+        }
+    }
+}
