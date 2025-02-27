@@ -373,3 +373,53 @@ fun StatisticsContent(timeframe: String) {
         }
     }
 }
+
+@Composable
+fun ProfileInfo() {
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    // Запуск выбора изображения из галереи
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedImageUri = uri
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 40.dp)
+    ) {
+        val imagePainter: Painter = if (selectedImageUri != null) {
+            rememberAsyncImagePainter(
+                ImageRequest.Builder(LocalContext.current)
+                    .data(selectedImageUri)
+                    .build()
+            )
+        } else {
+            painterResource(id = R.drawable.profile_avatar)
+        }
+
+        Image(
+            painter = imagePainter,
+            contentDescription = "Фото профиля",
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(60.dp))
+                .clickable {
+                    // Открыть галерею при нажатии
+                    launcher.launch("image/*")
+                },
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Алексей",
+            style = ExtraBoldGreen,
+            fontSize = 24.sp
+        )
+    }
+}
