@@ -857,3 +857,156 @@ fun FilterCategoryRadio(title: String, options: List<String>, selectedOption: Mu
         }
     }
 }
+
+@Composable
+fun LocationPickerField(
+    modifier: Modifier = Modifier,
+    onLocationSelected: (String) -> Unit
+) {
+    var showMap by remember { mutableStateOf(false) }
+    var selectedLocation by remember { mutableStateOf("") }
+    var selectedGeoPoint by remember { mutableStateOf<GeoPoint?>(null) }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        Configuration.getInstance().load(context, androidx.preference.PreferenceManager.getDefaultSharedPreferences(context))
+        Configuration.getInstance().userAgentValue = context.packageName
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            showMap = true
+        } else {
+            Toast.makeText(context, "Требуется разрешение для доступа к местоположению", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 17.dp)
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(46.dp)
+                .background(LightBeige, shape = RoundedCornerShape(25.dp))
+                .clickable {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        showMap = true
+                    } else {
+                        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                }
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = selectedLocation.ifEmpty { "Выберите место на карте" },
+                style = InputMediumGreen,
+                color = DarkGreen
+            )
+        }
+    }
+
+    if (showMap) {
+        AlertDialog(
+            backgroundColor = LightBeige,
+            shape = RoundedCornerShape(30.dp),
+            onDismissRequest = {
+                showMap = false
+                selectedGeoPoint?.let {
+                    val locationString = "%.6f, %.6f".format(it.latitude, it.longitude)
+                    selectedLocation = locationString
+                    onLocationSelected(locationString)
+                }
+            },
+            title = { Text("Выберите место на карте", style = InputMediumGreen, fontSize = 20.sp) },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(350.dp)
+                        .clip(RoundedCornerShape(1.dp))
+                        .padding(8.dp)
+                ) {
+                    AndroidView(
+                        factory = { context ->
+                            MapView(context).apply {
+                                setTileSource(TileSourceFactory.MAPNIK)
+                                minZoomLevel = 3.0
+                                maxZoomLevel = 18.0
+                                setMultiTouchControls(true)
+
+                                // Обработчик кликов на карту
+                                overlays.add(object : Overlay() {
+                                    override fun onSingleTapConfirmed(e: MotionEvent?, mapView: MapView?): Boolean {
+                                        e ?: return false
+                                        mapView ?: return false
+
+                                        // Корректное преобразование координат
+                                        val rect = mapView.projection.getScreenRect()
+                                        val adjustedX = (e.x - rect.left).toInt()
+                                        val adjustedY = (e.y - rect.top).toInt()
+
+                                        val iGeoPoint = mapView.projection.fromPixels(adjustedX, adjustedY)
+                                        val geoPoint = GeoPoint(iGeoPoint.latitude, iGeoPoint.longitude)
+
+                                        overlays.removeIf { it is Marker }
+
+                                        val marker = Marker(mapView).apply {
+                                            position = geoPoint
+                                            // Правильная установка якоря
+                                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                                            setIcon(ContextCompat.getDrawable(context, R.drawable.marker))
+                                            infoWindow = null
+                                        }
+
+                                        overlays.add(marker)
+                                        selectedGeoPoint = geoPoint
+                                        invalidate()
+                                        return true
+                                    }
+                                })
+
+                                // Центрирование карты
+                                val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                                if (ContextCompat.checkSelfPermission(
+                                        context, Manifest.permission.ACCESS_FINE_LOCATION
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
+                                        controller.setCenter(GeoPoint(it.latitude, it.longitude))
+                                        controller.setZoom(15.0)
+                                    } ?: run {
+                                        controller.setCenter(GeoPoint(55.7558, 37.6176)) // Москва по умолчанию
+                                        controller.setZoom(10.0)
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(1.dp))
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showMap = false
+                    selectedGeoPoint?.let {
+                        val locationString = "%.6f, %.6f".format(it.latitude, it.longitude)
+                        selectedLocation = locationString
+                        onLocationSelected(locationString)
+                    }
+                }) {
+                    Text("Сохранить", style = SemiBoldGreen)
+                }
+            }
+        )
+    }
+}
