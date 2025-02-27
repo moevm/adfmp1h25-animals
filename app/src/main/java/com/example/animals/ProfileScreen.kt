@@ -777,3 +777,26 @@ fun DescriptionField(query: String, onQueryChange: (String) -> Unit) {
         }
     }
 }
+
+@Composable
+fun FilterFieldPost() {
+    val animalTypes = listOf("Птицы", "Млекопитающие", "Рептилии", "Земноводные")
+    val sizes = listOf("Маленький", "Средний", "Большой")
+    val locations = listOf("Парк", "Лес/Роща", "Водоем", "Двор/Крыша")
+
+    // Сохраняем состояние с помощью remember
+    val selectedAnimalType = remember { mutableStateOf<String?>(null) }
+    val selectedSize = remember { mutableStateOf<String?>(null) }
+    val selectedLocation = remember { mutableStateOf<String?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        FilterCategoryRadio(title = "Тип животных", options = animalTypes, selectedOption = selectedAnimalType)
+        FilterCategoryRadio(title = "Размер", options = sizes, selectedOption = selectedSize)
+        FilterCategoryRadio(title = "Место находки", options = locations, selectedOption = selectedLocation)
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
