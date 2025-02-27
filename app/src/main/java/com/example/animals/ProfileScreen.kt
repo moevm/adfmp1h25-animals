@@ -374,6 +374,7 @@ fun StatisticsContent(timeframe: String) {
     }
 }
 
+
 @Composable
 fun ProfileInfo() {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -546,6 +547,10 @@ fun FilterCategoryPost(title: String, options: List<String>, selectedOption: Mut
         }
     }
 }
+
+
+
+
 
 @Composable
 fun BottomNavigationBar(
@@ -777,6 +782,7 @@ fun DescriptionField(query: String, onQueryChange: (String) -> Unit) {
         }
     }
 }
+
 
 @Composable
 fun FilterFieldPost() {
@@ -1010,3 +1016,4 @@ fun LocationPickerField(
         )
     }
 }
+
