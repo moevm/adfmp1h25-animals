@@ -423,3 +423,69 @@ fun ProfileInfo() {
         )
     }
 }
+
+@Composable
+fun AnimalCard(
+    name: String,
+    imageRes: Int,
+    repostCount: Int,
+    date: String,
+    onClick: () -> Unit
+) {
+    androidx.compose.material3.Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable { onClick() },
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = "Bird",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentScale = ContentScale.FillHeight
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(LightBeige)
+                    .padding(16.dp)
+            ) {
+                Column {
+                    androidx.compose.material3.Text(
+                        text = name,
+                        style = BoldGreen,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(id = R.drawable.repost_icon),
+                                contentDescription = "Repost",
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            androidx.compose.material3.Text(
+                                text = repostCount.toString(),
+                                style = InputMediumGreen,
+                                fontSize = 14.sp
+                            )
+                        }
+                        androidx.compose.material3.Text(
+                            text = date,
+                            style = InputMediumGreen,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
