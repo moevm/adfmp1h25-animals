@@ -800,3 +800,28 @@ fun FilterFieldPost() {
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
+
+@Composable
+fun CustomRoundRadioButton(
+    selected: Boolean,
+    onSelect: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(20.dp)
+            .clip(CircleShape)
+            .background(if (selected) DarkGreen else Color.Transparent)
+            .border(BorderStroke(2.dp, DarkGreen), CircleShape)
+            .clickable { onSelect() },
+        contentAlignment = Alignment.Center
+    ) {
+        if (selected) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Selected",
+                tint = LightBeige,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
