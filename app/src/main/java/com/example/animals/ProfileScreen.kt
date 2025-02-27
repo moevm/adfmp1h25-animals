@@ -274,3 +274,47 @@ fun ProfileScreen(
     }
 }
 
+@Composable
+fun SegmentedPicker(
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+
+    ) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .clip(RoundedCornerShape(50))
+            .background(LightGreen),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        options.forEachIndexed { index, option ->
+            val isSelected = option == selectedOption
+            val isFirst = index == 0
+            val isLast = index == options.lastIndex
+
+            Button(
+                onClick = { onOptionSelected(option) },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (isSelected) LightBeige else Color.Transparent,
+                    contentColor = if (isSelected) LightBeige else DarkGreen
+                ),
+                shape = RoundedCornerShape(50),
+                elevation = ButtonDefaults.elevation(0.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(
+                        start = if (isSelected && isFirst) 4.dp else 0.dp,
+                        end = if (isSelected && isLast) 4.dp else 0.dp
+                    )
+            ) {
+                Text(
+                    text = option,
+                    style = SemiBoldGreen,
+                )
+            }
+        }
+    }
+}
