@@ -598,3 +598,19 @@ fun BottomNavigationBar(
         }
     }
 }
+
+@Composable
+fun MessagesSection(onItemClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(LightBeige)
+//            .padding(top = 28.dp)
+    ) {
+        MessageItem(avatarRes = R.drawable.max_avatar, userName = "Максим", onClick = onItemClick)
+        Divider(color = DarkBeige, thickness = 1.dp)
+        MessageItem(avatarRes = R.drawable.lily_avatar, userName = "Лилия", onClick = onItemClick)
+        Divider(color = DarkBeige, thickness = 1.dp)
+        MessageItem(avatarRes = R.drawable.fernando_avatar, userName = "Федор", onClick = onItemClick)
+    }
+}
