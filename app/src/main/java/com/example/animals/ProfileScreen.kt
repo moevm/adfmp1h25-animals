@@ -546,3 +546,55 @@ fun FilterCategoryPost(title: String, options: List<String>, selectedOption: Mut
         }
     }
 }
+
+@Composable
+fun BottomNavigationBar(
+    sections: List<String>,
+    activeSection: String,
+    onSectionSelected: (String) -> Unit
+) {
+    BottomNavigation(
+        backgroundColor = Brown,
+        modifier = Modifier.height(80.dp)
+    ) {
+        sections.forEach { section ->
+            val isActive = section == activeSection
+            val iconRes = when (section) {
+                "Статистика" -> if (isActive) R.drawable.statistics_beige else R.drawable.statistics_green
+                "Публикации" -> if (isActive) R.drawable.pics_beige else R.drawable.pics_green
+                "Новая запись" -> if (isActive) R.drawable.add_beige else R.drawable.add_green
+                "Сообщения" -> if (isActive) R.drawable.message_beige else R.drawable.message_green
+                else -> R.drawable.statistics_beige
+            }
+
+            BottomNavigationItem(
+                icon = {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(horizontal = 6.dp)
+                    ) {
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Icon(
+                            painter = painterResource(id = iconRes),
+                            contentDescription = section,
+                            modifier = Modifier.size(40.dp),
+                            tint = Color.Unspecified
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+//                        Text(
+//                            text = section,
+//                            style = InputMediumGreen,
+//                            color = if (isActive) LightBeige else LightGreen,
+//                            fontSize = 11.sp
+//                        )
+//                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                },
+                selected = isActive,
+                onClick = { onSectionSelected(section) },
+                selectedContentColor = LightBeige,
+                unselectedContentColor = LightGreen
+            )
+        }
+    }
+}
