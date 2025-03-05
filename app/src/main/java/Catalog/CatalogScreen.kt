@@ -38,13 +38,14 @@ fun CatalogScreen(
                 filters.second.any { it.value } ||
                 filters.third.any { it.value }
     }
+
     var searchQuery by remember { mutableStateOf("") }
 
     val filteredAnimalList = remember(searchQuery, filters) {
         animalList.filter { animal ->
             val matchesSearch = animal.name.contains(searchQuery, ignoreCase = true)
 
-            // Фильтрация по типу (если ни один не выбран - показываем все)
+            // Фильтрация по типу
             val typeFilterActive = filters.first.any { it.value }
             val matchesType = !typeFilterActive || (filters.first[animal.category] == true)
 
@@ -52,7 +53,7 @@ fun CatalogScreen(
             val sizeFilterActive = filters.second.any { it.value }
             val matchesSize = !sizeFilterActive || (filters.second[animal.size] == true)
 
-            // Фильтрация по месту
+            // Фильтрация по местоположению
             val locationFilterActive = filters.third.any { it.value }
             val matchesLocation = !locationFilterActive || (filters.third[animal.location] == true)
 
@@ -99,7 +100,7 @@ fun CatalogScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
-                    onClick = { onFilterClick() },
+                    onClick = onFilterClick,
                     shape = RoundedCornerShape(25.dp),
                     modifier = Modifier.height(46.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -113,7 +114,7 @@ fun CatalogScreen(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Фильтры", style = ExtraBoldLightBeige, fontSize = 17.sp)
+                    Text("Фильтры", style = ExtraBoldLightBeige, fontSize = 17.sp)
                 }
 
                 if (areFiltersApplied) {
@@ -124,7 +125,11 @@ fun CatalogScreen(
                             contentColor = DarkGreen
                         )
                     ) {
-                        Text("Сбросить", style = ExtraBoldGreen, fontSize = 17.sp)
+                        Text(
+                            "Сбросить",
+                            style = ExtraBoldGreen,
+                            fontSize = 17.sp
+                        )
                     }
                 }
             }
