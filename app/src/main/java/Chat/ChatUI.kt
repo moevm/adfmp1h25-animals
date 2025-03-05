@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -44,7 +45,6 @@ import data.MessageType
 import data.SharedMessageType
 import data.UsersData
 import utils.getCurrentDate
-import utils.getCurrentTime
 
 
 @Composable
@@ -215,7 +215,7 @@ fun MessageInChat(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "${message.date} ${message.time}",
+                text = message.timestamp,
                 style = InputMediumGreen,
                 fontSize = 12.sp,
                 modifier = Modifier.align(Alignment.End)
@@ -229,6 +229,15 @@ fun MessageInChat(
 @Composable
 fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) -> Unit) {
     val messages = UsersData.users.find { it.name == name }?.messages ?: mutableListOf()
+    val lazyListState = rememberLazyListState()
+
+    // Автоматически прокручиваем к последнему сообщению при открытии чата
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            lazyListState.scrollToItem(messages.size - 1)
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -236,7 +245,8 @@ fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) ->
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            reverseLayout = false, // Порядок сверху вниз
+            state = lazyListState, // Используем состояние для управления прокруткой
+            reverseLayout = false, // Сообщения отображаются сверху вниз
             contentPadding = PaddingValues(8.dp)
         ) {
             items(messages.size) { index ->
@@ -244,19 +254,21 @@ fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) ->
                 when (message) {
                     is SharedMessageType -> SharedMessageCard(
                         sharedMessage = message,
-                        onSharedMessageClick = {animal -> onSharedMessageClick(animal)})
-                    is MessageType -> MessageInChat(message = message)
+                        onSharedMessageClick = { animal -> onSharedMessageClick(animal) }
+                    )
+                    else -> MessageInChat(message = message)
                 }
             }
         }
 
         InputField(
-            onSendClick = {message ->
+            onSendClick = { message ->
                 if (message.isNotEmpty()) {
-                    val newMessage = MessageType(message, true, getCurrentDate(), getCurrentTime())
+                    val newMessage = MessageType(message, true, getCurrentDate())
                     UsersData.users.find { it.name == name }?.messages?.add(newMessage)
                     Log.d("Chat", "messageText после отправки: $message")
-                } },
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
