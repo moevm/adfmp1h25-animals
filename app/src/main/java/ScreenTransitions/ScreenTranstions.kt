@@ -47,23 +47,23 @@ class MainActivity : ComponentActivity() {
 }
 
 val initialTypeFilters = mapOf(
-    "Млекопитающие" to true,
-    "Птицы" to true,
-    "Рептилии" to true,
-    "Земноводные" to true
+    "Млекопитающие" to false,
+    "Птицы" to false,
+    "Рептилии" to false,
+    "Земноводные" to false
 )
 
 val initialLocationFilters = mapOf(
-    "Парк" to true,
-    "Лес/Роща" to true,
-    "Водоем" to true,
-    "Двор/Крыша" to true
+    "Парк" to false,
+    "Лес/Роща" to false,
+    "Водоем" to false,
+    "Двор/Крыша" to false
 )
 
 val initialSizeFilters = mapOf(
-    "Маленький" to true,
-    "Средний" to true,
-    "Большой" to true
+    "Маленький" to false,
+    "Средний" to false,
+    "Большой" to false
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -105,7 +105,13 @@ fun AppNavigator() {
                     selectedAnimal = animal
                     currentScreen = Screen.RobinCard
                 },
-                onFilterClick = { currentScreen = Screen.Filter }
+                onFilterClick = { currentScreen = Screen.Filter },
+                onResetFilters = {
+                    // Сбрасываем фильтры к начальным значениям
+                    animalFilters = initialTypeFilters
+                    sizeFilters = initialSizeFilters
+                    locationFilters = initialLocationFilters
+                }
             )
         }
 

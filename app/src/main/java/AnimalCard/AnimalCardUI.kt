@@ -2,6 +2,7 @@ package AnimalCard
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -81,6 +82,92 @@ fun TopBarCard(onBackClick: () -> Unit, onProfileClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun FullScreenImageSlider(
+    images: List<ImageSource>,
+    initialPage: Int,
+    onDismiss: () -> Unit
+) {
+    val pagerState = rememberPagerState(initialPage = initialPage)
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        HorizontalPager(
+            count = images.size,
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                val image = images[page]
+
+                when (image) {
+                    is ImageSource.Drawable -> {
+                        Image(
+                            painter = painterResource(id = image.id),
+                            contentDescription = "Fullscreen image",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                    is ImageSource.UriSource -> {
+                        Image(
+                            painter = rememberAsyncImagePainter(image.uri),
+                            contentDescription = "Fullscreen image",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
+            }
+        }
+
+        // Индикаторы
+//        if (images.size > 1) {
+//            Row(
+//                modifier = Modifier
+//                    .align(Alignment.CenterHorizontally)
+//                    .padding(bottom = 16.dp),
+//                horizontalArrangement = Arrangement.Center
+//            ) {
+//                repeat(images.size) { index ->
+//                    Box(
+//                        modifier = Modifier
+//                            .size(15.dp)
+//                            .padding(4.dp)
+//                            .clip(CircleShape)
+//                            .background(if (index == pagerState.currentPage) DarkGreen else LightGreen)
+//                    )
+//                }
+//            }
+//        }
+    }
+
+    // Кнопка закрытия
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        IconButton(
+            onClick = onDismiss,
+            modifier = Modifier
+                .align(Alignment.TopEnd) // Теперь align вызывается внутри BoxScope
+                .padding(16.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.close_share),
+                contentDescription = "Close",
+                tint = LightBeige,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+    }
+}
+
 @Composable
 fun MapShortcut(coordinates: List<Double>) {
     Box(
@@ -123,7 +210,7 @@ fun MapShortcut(coordinates: List<Double>) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ImageSlider(imageList: List<ImageSource>) {
+fun ImageSlider(imageList: List<ImageSource>, onImageClick: (Int) -> Unit) {
 
     val pagerState = rememberPagerState(
         initialPage = Int.MAX_VALUE / 2
@@ -148,6 +235,7 @@ fun ImageSlider(imageList: List<ImageSource>) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
+                    .clickable { onImageClick(actualPage) }
             ) {
                 when (image) {
                     is ImageSource.Drawable -> {
@@ -174,23 +262,27 @@ fun ImageSlider(imageList: List<ImageSource>) {
             }
         }
 
-        Spacer(modifier = Modifier.height(6.dp))
+        if (imageList.size > 1) {
+            Spacer(modifier = Modifier.height(6.dp))
 
-        Row(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(imageList.size) { index ->
-                val isActive = index == (pagerState.currentPage % imageList.size)
-                Box(
-                    modifier = Modifier
-                        .size(15.dp)
-                        .padding(4.dp)
-                        .clip(CircleShape)
-                        .background(if (isActive) DarkGreen else LightGreen)
-                )
+            Row(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(imageList.size) { index ->
+                    val isActive = index == (pagerState.currentPage % imageList.size)
+                    Box(
+                        modifier = Modifier
+                            .size(15.dp)
+                            .padding(4.dp)
+                            .clip(CircleShape)
+                            .background(if (isActive) DarkGreen else LightGreen)
+                    )
+                }
             }
         }
+
+
     }
 }
 
@@ -278,7 +370,7 @@ fun ShareItem(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape),
-            contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(

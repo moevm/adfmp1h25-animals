@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 import com.example.animals.ui.theme.DarkGreen
 import com.example.animals.ui.theme.ExtraBoldLightBeige
 import com.example.animals.R
+import com.example.animals.ui.theme.ExtraBoldGreen
 import data.AnimalType
 import data.animalList
 
@@ -29,23 +30,34 @@ fun CatalogScreen(
     onProfileClick: () -> Unit,
     onAnimalCardClick: (AnimalType) -> Unit,
     onFilterClick: () -> Unit,
+    onResetFilters: () -> Unit
 ) {
 
+    val areFiltersApplied = remember(filters) {
+        filters.first.any { it.value } ||
+                filters.second.any { it.value } ||
+                filters.third.any { it.value }
+    }
     var searchQuery by remember { mutableStateOf("") }
 
     val filteredAnimalList = remember(searchQuery, filters) {
-//        Log.d("CatalogScreen", "Фильтры в каталоге: " +
-//                "Поиск: $searchQuery, " +
-//                "Фильтры: $filters, "
-//        )
-
         animalList.filter { animal ->
-            animal.name.contains(searchQuery, ignoreCase = true) &&
-                    (filters.first[animal.category] == true) &&
-                    (filters.second[animal.size] == true) &&
-                    (filters.third[animal.location] == true)
-        }
+            val matchesSearch = animal.name.contains(searchQuery, ignoreCase = true)
 
+            // Фильтрация по типу (если ни один не выбран - показываем все)
+            val typeFilterActive = filters.first.any { it.value }
+            val matchesType = !typeFilterActive || (filters.first[animal.category] == true)
+
+            // Фильтрация по размеру
+            val sizeFilterActive = filters.second.any { it.value }
+            val matchesSize = !sizeFilterActive || (filters.second[animal.size] == true)
+
+            // Фильтрация по месту
+            val locationFilterActive = filters.third.any { it.value }
+            val matchesLocation = !locationFilterActive || (filters.third[animal.location] == true)
+
+            matchesSearch && matchesType && matchesSize && matchesLocation
+        }
     }
 
     val insets = WindowInsets.systemBars
@@ -82,22 +94,39 @@ fun CatalogScreen(
 
             Spacer(modifier = Modifier.height(26.dp))
 
-            Button(
-                onClick = {onFilterClick()},
-                shape = RoundedCornerShape(25.dp),
-                modifier = Modifier.height(46.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = DarkGreen,
-                    contentColor = LightBeige
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.filter_icon),
-                    contentDescription = "Фильтры",
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Фильтры", style = ExtraBoldLightBeige, fontSize = 17.sp)
+                Button(
+                    onClick = { onFilterClick() },
+                    shape = RoundedCornerShape(25.dp),
+                    modifier = Modifier.height(46.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DarkGreen,
+                        contentColor = LightBeige
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.filter_icon),
+                        contentDescription = "Фильтры",
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Фильтры", style = ExtraBoldLightBeige, fontSize = 17.sp)
+                }
+
+                if (areFiltersApplied) {
+                    TextButton(
+                        onClick = { onResetFilters() },
+                        modifier = Modifier.height(46.dp),
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = DarkGreen
+                        )
+                    ) {
+                        Text("Сбросить", style = ExtraBoldGreen, fontSize = 17.sp)
+                    }
+                }
             }
 
 

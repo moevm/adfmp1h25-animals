@@ -4,12 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -32,44 +30,26 @@ fun AnimalCardInCatalog(animal: AnimalType, onCardClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            Box {
-                when (animal.mainImage) {
-                    is ImageSource.Drawable -> {
-                        Image(
-                            painter = painterResource(id = animal.mainImage.id),
-                            contentDescription = "Животное",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            contentScale = ContentScale.FillHeight
-                        )
-                    }
-                    is ImageSource.UriSource -> {
-                        Image(
-                            painter = rememberAsyncImagePainter(animal.mainImage.uri),
-                            contentDescription = "Животное",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            contentScale = ContentScale.FillHeight
-                        )
-                    }
-                }
-
-                // Отображение количества фото в правом верхнем углу изображения
-                if (animal.images.isNotEmpty()) {
-                    Box(
+            when (animal.mainImage) {
+                is ImageSource.Drawable -> {
+                    Image(
+                        painter = painterResource(id = animal.mainImage.id),
+                        contentDescription = "Животное",
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .background(Color.Black.copy(alpha = 0.6f), shape = RoundedCornerShape(6.dp))
-                            .padding(horizontal = 6.dp, vertical = 3.dp)
-                    ) {
-                        Text(
-                            text = "${animal.images.size} фото",
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                    }
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                is ImageSource.UriSource -> {
+                    Image(
+                        painter = rememberAsyncImagePainter(animal.mainImage.uri),
+                        contentDescription = "Животное",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        contentScale = ContentScale.Crop
+                    )
                 }
             }
             Box(
@@ -103,7 +83,7 @@ fun AnimalCardInCatalog(animal: AnimalType, onCardClick: () -> Unit) {
                             )
                         }
                         Text(
-                            text = "${animal.date} ${animal.time}",
+                            text = animal.date,
                             style = InputMediumGreen,
                             fontSize = 14.sp
                         )

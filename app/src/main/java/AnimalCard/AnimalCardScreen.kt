@@ -29,12 +29,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.Dialog
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.example.animals.R
 import data.AnimalType
 import data.UsersData
+// Для Dialog
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
+// Для обработки кликов
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.Icon
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.rememberAsyncImagePainter
+import data.ImageSource
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -50,6 +60,8 @@ fun AnimalCardScreen(animal: AnimalType, onBackClick: () -> Unit, onProfileClick
     // Состояние для управления видимостью модального окна
     var showBottomSheet by remember { mutableStateOf(false) }
     val view = LocalView.current
+    var selectedImageIndex by remember { mutableStateOf(0) }
+    var showFullScreenImage by remember { mutableStateOf(false) }
     LaunchedEffect(showBottomSheet) {
         val window = (view.context as? android.app.Activity)?.window
         window?.let {
@@ -70,8 +82,34 @@ fun AnimalCardScreen(animal: AnimalType, onBackClick: () -> Unit, onProfileClick
                 .verticalScroll(rememberScrollState())
         ) {
             TopBarCard(onBackClick, onProfileClick)
-            ImageSlider(imageList = animal.images)
+            ImageSlider(
+                imageList = animal.images,
+                onImageClick = { index ->
+                    selectedImageIndex = index
+                    showFullScreenImage = true
+                })
             AnimalInfo(animal=animal, onShareClick = { showBottomSheet = true })
+        }
+
+        if (showFullScreenImage) {
+            Dialog(
+                onDismissRequest = { showFullScreenImage = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black)
+                        .clickable { showFullScreenImage = false },
+                    contentAlignment = Alignment.Center
+                ) {
+                    FullScreenImageSlider(
+                        images = animal.images,
+                        initialPage = selectedImageIndex,
+                        onDismiss = { showFullScreenImage = false }
+                    )
+                }
+            }
         }
 
         // Модальное окно
