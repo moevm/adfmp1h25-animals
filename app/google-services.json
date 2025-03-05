@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "708295856124",
+    "project_id": "birdwatcherapp-74978",
+    "storage_bucket": "birdwatcherapp-74978.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708295856124:android:d26e2508e9e47430a56c79",
+        "android_client_info": {
+          "package_name": "com.example.animals"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb3BNoC9NDl1r2iUyrHRP-QX_geYDZvec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708295856124:android:12ac1cc22976095da56c79",
+        "android_client_info": {
+          "package_name": "com.example.birdwatcherapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb3BNoC9NDl1r2iUyrHRP-QX_geYDZvec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
