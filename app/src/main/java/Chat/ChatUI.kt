@@ -45,6 +45,7 @@ import data.MessageType
 import data.SharedMessageType
 import data.UsersData
 import utils.getCurrentDate
+import utils.getCurrentTime
 
 
 @Composable
@@ -215,7 +216,7 @@ fun MessageInChat(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = message.timestamp,
+                text = "${message.date} ${message.time}",
                 style = InputMediumGreen,
                 fontSize = 12.sp,
                 modifier = Modifier.align(Alignment.End)
@@ -229,9 +230,9 @@ fun MessageInChat(
 @Composable
 fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) -> Unit) {
     val messages = UsersData.users.find { it.name == name }?.messages ?: mutableListOf()
+
     val lazyListState = rememberLazyListState()
 
-    // Автоматически прокручиваем к последнему сообщению при открытии чата
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             lazyListState.scrollToItem(messages.size - 1)
@@ -246,7 +247,7 @@ fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) ->
                 .fillMaxWidth()
                 .weight(1f),
             state = lazyListState, // Используем состояние для управления прокруткой
-            reverseLayout = false, // Сообщения отображаются сверху вниз
+            reverseLayout = false,
             contentPadding = PaddingValues(8.dp)
         ) {
             items(messages.size) { index ->
@@ -254,21 +255,19 @@ fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) ->
                 when (message) {
                     is SharedMessageType -> SharedMessageCard(
                         sharedMessage = message,
-                        onSharedMessageClick = { animal -> onSharedMessageClick(animal) }
-                    )
-                    else -> MessageInChat(message = message)
+                        onSharedMessageClick = {animal -> onSharedMessageClick(animal)})
+                    is MessageType -> MessageInChat(message = message)
                 }
             }
         }
 
         InputField(
-            onSendClick = { message ->
+            onSendClick = {message ->
                 if (message.isNotEmpty()) {
-                    val newMessage = MessageType(message, true, getCurrentDate())
+                    val newMessage = MessageType(message, true, getCurrentDate(), getCurrentTime())
                     UsersData.users.find { it.name == name }?.messages?.add(newMessage)
                     Log.d("Chat", "messageText после отправки: $message")
-                }
-            },
+                } },
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
