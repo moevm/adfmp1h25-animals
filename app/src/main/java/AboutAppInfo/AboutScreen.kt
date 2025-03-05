@@ -100,7 +100,7 @@ fun TopBarAbout(onBackClick: () -> Unit, onProfileClick: () -> Unit) {
         }
 
         Text(
-            text = "О приложении",
+            text = "About",
             style = ExtraBoldGreen,
             modifier = Modifier.padding(16.dp)
         )
