@@ -106,8 +106,8 @@ fun AppNavigator() {
                     currentScreen = Screen.RobinCard
                 },
                 onFilterClick = { currentScreen = Screen.Filter },
+
                 onResetFilters = {
-                    // Сбрасываем фильтры к начальным значениям
                     animalFilters = initialTypeFilters
                     sizeFilters = initialSizeFilters
                     locationFilters = initialLocationFilters
@@ -149,7 +149,6 @@ fun AppNavigator() {
             currentSizeFilters = sizeFilters,
             currentLocationFilters = locationFilters,
             onCancel = {
-//                Log.d("AppNavigator", "Фильтры отменены")
                 currentScreen = Screen.Catalog
             },
             onApply = { newAnimalFilters, newSizeFilters, newLocationFilters ->
