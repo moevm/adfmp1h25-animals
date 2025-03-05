@@ -43,7 +43,7 @@ fun AnimalInfo(animal: AnimalType,
         Spacer(modifier = Modifier.height(16.dp))
         MapShortcut(coordinates = animal.geoLocation)
         Spacer(modifier = Modifier.height(16.dp))
-        InfoRow(label = "Дата встречи:", value = animal.date)
+        InfoRow(label = "Дата встречи:", value = "${animal.date} ${animal.time}")
 
         Spacer(modifier = Modifier.height(16.dp))
         Row(
