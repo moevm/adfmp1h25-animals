@@ -1,15 +1,22 @@
 package data
 
-open class MessageType(
+sealed class BaseMessageType {
+    abstract val date: String
+    abstract val time: String
+}
+
+data class MessageType(
     val text: String,
     val isFromMe: Boolean,
-    val timestamp: String
-)
+    override val date: String,
+    override val time: String
+) : BaseMessageType()
 
 data class SharedMessageType(
     val postTitle: String,
     val postImage: ImageSource,
-    val sharedTimestamp: String = "",
     val repostsCount: Int,
     val isFromMeShared: Boolean,
-) : MessageType(text = postTitle, isFromMe = isFromMeShared, timestamp = sharedTimestamp)
+    override val date: String,
+    override val time: String
+) : BaseMessageType()

@@ -24,6 +24,7 @@ import data.AnimalType
 import data.ImageSource
 import data.animalList
 import utils.getCurrentDate
+import utils.getCurrentTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -135,6 +136,7 @@ fun NewPost(
                             mainImage = correctSelectedImages[0],
                             repostCount = 0,
                             date = getCurrentDate(),
+                            time = getCurrentTime(),
                             author = "Алексей",
                             location = selectedLocation!!,
                             category = selectedAnimalType!!,

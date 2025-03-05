@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,13 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.animals.ui.theme.DarkBeige
 import com.example.animals.ui.theme.ExtraBoldGreen
+import com.example.animals.ui.theme.InputMediumGreen
 import com.example.animals.ui.theme.LightBeige
 import data.UsersData
 import data.animalList
+import utils.getLastMessageByUserName
+import utils.getLastMessageDateTimeByUserName
 
 
 @Composable
@@ -52,6 +57,9 @@ fun MessagesSection(searchQuery: String, onItemClick: (name: String) -> Unit) {
 
 @Composable
 fun MessageItem(avatarRes: Int, userName: String, onClick: () -> Unit) {
+    val lastMessage = getLastMessageByUserName(userName)
+    val timestamp = getLastMessageDateTimeByUserName(userName)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -68,10 +76,27 @@ fun MessageItem(avatarRes: Int, userName: String, onClick: () -> Unit) {
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = userName,
-            style = ExtraBoldGreen,
-            fontSize = 24.sp
-        )
+        Column {
+            Text(
+                text = userName,
+                style = ExtraBoldGreen,
+                fontSize = 24.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = lastMessage ?: "Нет сообщений",
+                style = InputMediumGreen,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = timestamp.toString(),
+                style = InputMediumGreen,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }

@@ -23,22 +23,25 @@ import com.example.animals.ui.theme.InputMediumGreen
 import com.example.animals.ui.theme.SemiBoldGreen
 import com.example.animals.R
 import data.AnimalType
+import data.BaseMessageType
 import data.ImageSource
 import data.MessageType
 import data.SharedMessageType
 import data.animalList
 import utils.getCurrentDate
+import utils.getCurrentTime
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun addSharedMessage(
-    messages: MutableList<MessageType>,
+    messages: MutableList<BaseMessageType>,
     animal: AnimalType,
 ) {
     val newSharedMessage = SharedMessageType(
         postTitle = animal.name,
         postImage = animal.mainImage,
-        sharedTimestamp = getCurrentDate(),
+        date = getCurrentDate(),
+        time = getCurrentTime(),
         repostsCount = animal.repostCount,
         isFromMeShared = true,
     )
@@ -132,7 +135,7 @@ fun SharedMessageCard(
                                 )
                             }
                             Text(
-                                text = sharedMessage.timestamp,
+                                text = "${sharedMessage.date} ${sharedMessage.time}",
                                 style = InputMediumGreen,
                                 fontSize = 12.sp
                             )

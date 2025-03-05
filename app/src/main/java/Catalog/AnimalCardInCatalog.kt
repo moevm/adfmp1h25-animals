@@ -103,16 +103,11 @@ fun AnimalCardInCatalog(animal: AnimalType, onCardClick: () -> Unit) {
                             )
                         }
                         Text(
-                            text = animal.date,
+                            text = "${animal.date} ${animal.time}",
                             style = InputMediumGreen,
                             fontSize = 14.sp
                         )
                     }
-                    Text(
-                        text = animal.time,
-                        style = InputMediumGreen,
-                        fontSize = 14.sp
-                    )
                 }
             }
         }

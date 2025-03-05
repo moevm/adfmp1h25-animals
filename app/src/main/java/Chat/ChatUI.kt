@@ -44,6 +44,7 @@ import data.MessageType
 import data.SharedMessageType
 import data.UsersData
 import utils.getCurrentDate
+import utils.getCurrentTime
 
 
 @Composable
@@ -214,7 +215,7 @@ fun MessageInChat(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = message.timestamp,
+                text = "${message.date} ${message.time}",
                 style = InputMediumGreen,
                 fontSize = 12.sp,
                 modifier = Modifier.align(Alignment.End)
@@ -244,7 +245,7 @@ fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) ->
                     is SharedMessageType -> SharedMessageCard(
                         sharedMessage = message,
                         onSharedMessageClick = {animal -> onSharedMessageClick(animal)})
-                    else -> MessageInChat(message = message)
+                    is MessageType -> MessageInChat(message = message)
                 }
             }
         }
@@ -252,7 +253,7 @@ fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) ->
         InputField(
             onSendClick = {message ->
                 if (message.isNotEmpty()) {
-                    val newMessage = MessageType(message, true, getCurrentDate())
+                    val newMessage = MessageType(message, true, getCurrentDate(), getCurrentTime())
                     UsersData.users.find { it.name == name }?.messages?.add(newMessage)
                     Log.d("Chat", "messageText после отправки: $message")
                 } },
