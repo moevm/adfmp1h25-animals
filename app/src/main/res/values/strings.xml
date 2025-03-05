@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">BirdWatcherApp</string>
+    <string name="Каталог_городских_птиц_и_животных">Каталог_городских_птиц_и_животных</string>
+    <string name="Catalog_of_Urban_Birds_and_Animals">Catalog_of_Urban_Birds_and_Animals</string>
+    <string name="WildTracks">WildTracks</string>
 </resources>
