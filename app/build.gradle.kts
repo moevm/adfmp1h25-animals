@@ -47,6 +47,7 @@ android {
 
 dependencies {
 
+    implementation("com.google.code.gson:gson:2.8.9")
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
@@ -71,6 +72,7 @@ dependencies {
     implementation(libs.volley)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
