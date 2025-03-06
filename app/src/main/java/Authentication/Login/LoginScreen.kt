@@ -46,6 +46,12 @@ fun LogInScreen(onLoginSuccess: () -> Unit, onBack: () -> Unit) {
 
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
+    val sharedPreferences = context.getSharedPreferences("auth_prefs", 0)
+    LaunchedEffect(Unit) {
+        if (auth.currentUser != null || sharedPreferences.getBoolean("is_logged_in", false)) {
+            onLoginSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -100,6 +106,7 @@ fun LogInScreen(onLoginSuccess: () -> Unit, onBack: () -> Unit) {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
+                            sharedPreferences.edit().putBoolean("is_logged_in", true).apply()
                             onLoginSuccess()
                         } else {
                             errorMessage = task.exception?.localizedMessage ?: "Ошибка входа"
