@@ -15,6 +15,28 @@ import androidx.compose.ui.unit.sp
 import com.example.animals.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 
+private fun performLogin(
+    email: String,
+    password: String,
+    auth: FirebaseAuth,
+    onLoginSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    if (email.isBlank() || password.isBlank()) {
+        onError("Введите почту и пароль")
+        return
+    }
+
+    auth.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onLoginSuccess()
+            } else {
+                onError(task.exception?.localizedMessage ?: "Ошибка входа")
+            }
+        }
+}
+
 @Composable
 fun LogInScreen(onLoginSuccess: () -> Unit, onBack: () -> Unit) {
     var email by remember { mutableStateOf("") }
@@ -44,12 +66,23 @@ fun LogInScreen(onLoginSuccess: () -> Unit, onBack: () -> Unit) {
         LoginInputField(label = "Почта:", value = email, onValueChange = { email = it })
         Spacer(modifier = Modifier.height(16.dp))
 
+        // LogInScreen.kt
         LoginPasswordField(
             label = "Пароль:",
             password = password,
             onPasswordChange = { password = it },
             isPasswordVisible = isPasswordVisible,
-            onToggleVisibility = { isPasswordVisible = !isPasswordVisible }
+            onToggleVisibility = { isPasswordVisible = !isPasswordVisible },
+            onAuthTrigger = {
+                // Выносим логику авторизации в отдельную функцию
+                performLogin(
+                    email = email,
+                    password = password,
+                    auth = auth,
+                    onLoginSuccess = onLoginSuccess,
+                    onError = { errorMessage = it }
+                )
+            }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -89,7 +122,15 @@ fun LogInScreen(onLoginSuccess: () -> Unit, onBack: () -> Unit) {
             )
         }
 
-        TextButton(onClick = onBack) {
+        TextButton(onClick = {
+            performLogin(
+                email = email,
+                password = password,
+                auth = auth,
+                onLoginSuccess = onLoginSuccess,
+                onError = { errorMessage = it }
+            )
+        },) {
             Text(
                 text = "Назад",
                 style = ButtonsExtraBold,

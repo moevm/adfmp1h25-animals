@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -54,13 +55,15 @@ fun LoginInputField(label: String, value: String, onValueChange: (String) -> Uni
     }
 }
 
+// LoginUI.kt
 @Composable
 fun LoginPasswordField(
     label: String,
     password: String,
     onPasswordChange: (String) -> Unit,
     isPasswordVisible: Boolean,
-    onToggleVisibility: () -> Unit
+    onToggleVisibility: () -> Unit,
+    onAuthTrigger: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 17.dp)) {
         Text(
@@ -80,8 +83,17 @@ fun LoginPasswordField(
                 value = password,
                 onValueChange = onPasswordChange,
                 textStyle = InputMediumBrown,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { onAuthTrigger() }
+                ),
+                visualTransformation = if (isPasswordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
                 decorationBox = { innerTextField ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -100,7 +112,10 @@ fun LoginPasswordField(
                         }
                         IconButton(onClick = onToggleVisibility) {
                             Icon(
-                                imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                imageVector = if (isPasswordVisible)
+                                    Icons.Filled.Visibility
+                                else
+                                    Icons.Filled.VisibilityOff,
                                 contentDescription = "Включить видимость пароля"
                             )
                         }

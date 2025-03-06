@@ -1,11 +1,13 @@
 package data
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.example.animals.R
 
 data class UserType(
     val name: String,
     val avatar: Int,
-    val messages: MutableList<BaseMessageType>
+    val messages: SnapshotStateList<BaseMessageType>
 )
 
 object UsersData {
@@ -13,7 +15,7 @@ object UsersData {
         UserType(
             name = "Максим",
             avatar = R.drawable.max_avatar,
-            messages = mutableListOf(
+            messages = mutableStateListOf(
                 MessageType("Привет! Как твои дела?", false, "10.02.2025", "09:30"),
                 MessageType("Привет! Все хорошо, спасибо. А у тебя?", true, "10.02.2025", "09:35"),
                 SharedMessageType("Голубь", ImageSource.Drawable(R.drawable.pigeon), 5, true, "10.02.2025", "09:40"),
@@ -25,7 +27,7 @@ object UsersData {
         UserType(
             name = "Лилия",
             avatar = R.drawable.lily_avatar,
-            messages = mutableListOf(
+            messages = mutableStateListOf(
                 MessageType("Как дела? Как прошел день?", false, "11.02.2025", "10:15"),
                 MessageType("Привет! Все хорошо, день был насыщенный. А твой?", true, "11.02.2025", "10:20"),
                 SharedMessageType("Лиса", ImageSource.Drawable(R.drawable.fox), 7, true, "11.02.2025", "10:25"),
@@ -38,7 +40,7 @@ object UsersData {
         UserType(
             name = "Федор",
             avatar = R.drawable.fedor_avatar,
-            messages = mutableListOf(
+            messages = mutableStateListOf(
                 MessageType("Слушай, как тебе мои новые фотки?", false, "12.02.2025", "11:00"),
                 MessageType("Привет! Очень крутые фото, здорово получилось!", true, "12.02.2025", "11:05"),
                 MessageType("Рад, что оценил!", true, "12.02.2025", "11:10"),

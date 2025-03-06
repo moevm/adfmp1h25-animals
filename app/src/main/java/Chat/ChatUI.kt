@@ -11,49 +11,44 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.animals.ui.theme.DarkBeige
-import com.example.animals.ui.theme.ExtraBoldGreen
-import androidx.compose.ui.draw.shadow
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.zIndex
-import com.example.animals.ui.theme.DarkGreen
-import com.example.animals.ui.theme.InputMediumGreen
-import com.example.animals.ui.theme.LightBeige
-import androidx.compose.ui.platform.LocalConfiguration
 import com.example.animals.R
+import com.example.animals.ui.theme.*
 import data.AnimalType
 import data.MessageType
 import data.SharedMessageType
 import data.UsersData
 import utils.getCurrentDate
 import utils.getCurrentTime
-
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 @Composable
 fun TopBarChat(onBack: () -> Unit, name: String) {
     val avatar = remember(name) {
         UsersData.users.find { it.name == name }?.avatar ?: R.drawable.empty_avatar
     }
-
 
     Surface(
         modifier = Modifier
@@ -86,7 +81,7 @@ fun TopBarChat(onBack: () -> Unit, name: String) {
 
             Image(
                 painter = painterResource(id = avatar),
-                contentDescription = "Max Avatar",
+                contentDescription = "User Avatar",
                 modifier = Modifier
                     .size(64.dp)
                     .clip(CircleShape),
@@ -109,7 +104,9 @@ fun InputField(
     onSendClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var messageText by remember { mutableStateOf("") }
+    var messageText by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(""))
+    }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -128,45 +125,50 @@ fun InputField(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextField(
+            BasicTextField(
                 value = messageText,
-                onValueChange = { messageText = it
-                    Log.d("Chat", "Измененное сообщение: $messageText")},
+                onValueChange = { messageText = it },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 8.dp)
+                    .padding(top = 10.dp, bottom = 10.dp, end = 8.dp)
                     .focusRequester(focusRequester)
                     .onFocusChanged {
                         if (it.isFocused) keyboardController?.show()
                     },
-                placeholder = {
-                    if (messageText.isEmpty()) {
-                        Text(
-                            text = "Сообщение",
-                            style = InputMediumGreen.copy(fontSize = 18.sp)
-                        )
-                    }
-                },
                 textStyle = InputMediumGreen.copy(
                     fontSize = 18.sp,
                     color = DarkGreen
                 ),
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = DarkGreen,
-                    unfocusedTextColor = DarkGreen,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (messageText.text.isEmpty()) {
+                            Text(
+                                text = "Сообщение",
+                                style = InputMediumGreen.copy(
+                                    fontSize = 18.sp,
+                                    color = DarkGreen.copy(alpha = 0.6f)
+                                )
+                            )
+                        }
+                        innerTextField()
+                    }
+                },
                 singleLine = true
             )
 
             IconButton(
                 onClick = {
-                    Log.d("Input", "Отправленное сообщение: $messageText")
-                    onSendClick(messageText)
-                    messageText=""},
+                    val text = messageText.text.trim()
+                    if (text.isNotEmpty()) {
+                        onSendClick(text)
+                        messageText = TextFieldValue("")
+                    }
+                },
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
@@ -184,7 +186,6 @@ fun InputField(
     }
 }
 
-
 @Composable
 fun MessageInChat(
     message: MessageType,
@@ -192,7 +193,6 @@ fun MessageInChat(
 ) {
     val background = if (message.isFromMe) Color(0xFFF9EBC7) else Color(0xFFF5E5BD)
     val shape = RoundedCornerShape(16.dp)
-
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
@@ -225,29 +225,25 @@ fun MessageInChat(
     }
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) -> Unit) {
-    val messages = UsersData.users.find { it.name == name }?.messages ?: mutableListOf()
-
+    val user = UsersData.users.find { it.name == name }
+    val messages = user?.messages ?: remember { mutableStateListOf() }
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
-            lazyListState.scrollToItem(messages.size - 1)
+            lazyListState.animateScrollToItem(messages.size - 1)
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            state = lazyListState, // Используем состояние для управления прокруткой
-            reverseLayout = false,
+            state = lazyListState,
             contentPadding = PaddingValues(8.dp)
         ) {
             items(messages.size) { index ->
@@ -255,19 +251,25 @@ fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) ->
                 when (message) {
                     is SharedMessageType -> SharedMessageCard(
                         sharedMessage = message,
-                        onSharedMessageClick = {animal -> onSharedMessageClick(animal)})
+                        onSharedMessageClick = onSharedMessageClick
+                    )
                     is MessageType -> MessageInChat(message = message)
                 }
             }
         }
 
         InputField(
-            onSendClick = {message ->
-                if (message.isNotEmpty()) {
-                    val newMessage = MessageType(message, true, getCurrentDate(), getCurrentTime())
-                    UsersData.users.find { it.name == name }?.messages?.add(newMessage)
-                    Log.d("Chat", "messageText после отправки: $message")
-                } },
+            onSendClick = { messageText ->
+                if (messageText.isNotEmpty()) {
+                    val newMessage = MessageType(
+                        text = messageText,
+                        isFromMe = true,
+                        date = getCurrentDate(),
+                        time = getCurrentTime()
+                    )
+                    user?.messages?.add(newMessage)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
@@ -276,7 +278,3 @@ fun ChatMessagesList(name: String, onSharedMessageClick: (animal: AnimalType) ->
         )
     }
 }
-
-
-
-
