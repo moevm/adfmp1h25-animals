@@ -4,6 +4,7 @@ import Profile.Chats.Chats
 import Profile.NewPost.NewPost
 import Profile.Posts.Posts
 import Profile.Statistics.Statistics
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -18,7 +19,9 @@ import com.example.animals.ui.theme.*
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.platform.LocalContext
 import com.example.animals.R
+import com.google.firebase.auth.FirebaseAuth
 import data.AnimalType
 
 enum class Section(val title: String) {
@@ -36,7 +39,7 @@ fun ProfileScreen(
     onChatClick: (String) -> Unit,
     onLogout: () -> Unit
 ) {
-
+    val context = LocalContext.current
     var activeSection by remember { mutableStateOf(Section.Chats.title) }
     val insets = WindowInsets.systemBars
     val topInset = with(LocalDensity.current) {
@@ -69,7 +72,15 @@ fun ProfileScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = onLogout) {
+                        IconButton(onClick = {
+                            FirebaseAuth.getInstance().signOut() // Выход из Firebase
+
+                            // Очистка сохраненных данных о входе
+                            val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                            sharedPreferences.edit().putBoolean("is_logged_in", false).apply()
+
+                            onLogout() // Перенаправляем пользователя
+                        }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.exit),
                                 contentDescription = "Выход",
