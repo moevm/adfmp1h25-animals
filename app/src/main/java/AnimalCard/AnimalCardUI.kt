@@ -100,7 +100,7 @@ fun MapShortcut(coordinates: List<Double>) {
                 MapView(context).apply {
                     setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK)
                     setMultiTouchControls(true)
-                    controller.setZoom(20.0)
+                    controller.setZoom(17.0)
                     controller.setCenter(GeoPoint(coordinates[0], coordinates[1])) // Координаты Москвы
 
                     // Ограничение области масштабирования внутри видимой зоны

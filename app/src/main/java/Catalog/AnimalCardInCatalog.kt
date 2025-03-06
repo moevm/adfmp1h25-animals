@@ -30,8 +30,6 @@ import com.example.animals.ui.theme.*
 
 @Composable
 fun AnimalCardInCatalog(animal: AnimalType, onCardClick: () -> Unit) {
-    var showFullScreenImage by remember { mutableStateOf(false) }
-    var selectedImageIndex by remember { mutableStateOf(0) }
 
 
     Card(
@@ -50,11 +48,7 @@ fun AnimalCardInCatalog(animal: AnimalType, onCardClick: () -> Unit) {
                             contentDescription = "Животное",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
-                                .clickable {
-                                showFullScreenImage = true
-                                selectedImageIndex = 0
-                            },
+                                .height(200.dp),
                         contentScale = ContentScale.Crop
                         )
                     }
@@ -64,11 +58,7 @@ fun AnimalCardInCatalog(animal: AnimalType, onCardClick: () -> Unit) {
                             contentDescription = "Животное",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
-                                .clickable {
-                                    showFullScreenImage = true
-                                    selectedImageIndex = 0
-                                },
+                                .height(200.dp),
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -149,17 +139,5 @@ fun AnimalCardInCatalog(animal: AnimalType, onCardClick: () -> Unit) {
             }
         }
 
-    if (showFullScreenImage) {
-        Dialog(
-            onDismissRequest = { showFullScreenImage = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            FullScreenImageSlider(
-                images = animal.images,
-                initialPage = selectedImageIndex,
-                onDismiss = { showFullScreenImage = false }
-            )
-        }
-    }
 }
 
