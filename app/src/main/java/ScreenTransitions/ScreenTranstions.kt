@@ -18,7 +18,9 @@ import Chat.ChatScreen
 import Home.HomeScreen
 import Profile.ProfileNavigation.ProfileScreen
 import Welcome.WelcomeScreen
+import android.content.Context
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import data.AnimalType
 
 
@@ -69,10 +71,15 @@ val initialSizeFilters = mapOf(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigator() {
+    val firebaseAuth = FirebaseAuth.getInstance()
     var animalFilters by remember { mutableStateOf(initialTypeFilters) }
     var sizeFilters by remember { mutableStateOf(initialSizeFilters) }
     var locationFilters by remember { mutableStateOf(initialLocationFilters) }
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.Welcome) }
+    var currentScreen by remember {
+        mutableStateOf<Screen>(
+            if (firebaseAuth.currentUser != null) Screen.Catalog else Screen.Welcome
+        )
+    }
     var selectedAnimal by remember { mutableStateOf<AnimalType?>(null) }
     var selectedName by remember { mutableStateOf<String?>(null) }
 
@@ -132,7 +139,8 @@ fun AppNavigator() {
                 onChatClick = { userName ->
                     selectedName=userName
                     currentScreen = Screen.Chat },
-                onLogout = { currentScreen = Screen.Home }
+                onLogout = { FirebaseAuth.getInstance().signOut()
+                    currentScreen = Screen.Home }
             )
         }
 
