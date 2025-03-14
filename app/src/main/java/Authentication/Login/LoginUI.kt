@@ -88,7 +88,7 @@ fun LoginPasswordField(
                 textStyle = InputMediumBrown,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Go
+                    imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = { onAuthTrigger() }
