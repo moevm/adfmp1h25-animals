@@ -51,7 +51,7 @@ val animalList = mutableListOf(
         location = "Лес/Роща",
         category = "Птицы",
         size = "Маленький",
-        geoLocation = listOf(102.751244, 37.618423),
+        geoLocation = listOf(55.751244, 39.618423),
         description = "Синица — активная и любознательная птица, известная своей ярко-жёлтой грудкой и черной «маской» на голове. Любит леса и парки, часто прилетает к кормушкам.",
         images = listOf(ImageSource.Drawable(R.drawable.tit),
             ImageSource.Drawable(R.drawable.tit2),
