@@ -130,14 +130,8 @@ fun LogInScreen(onLoginSuccess: () -> Unit, onBack: () -> Unit) {
         }
 
         TextButton(onClick = {
-            performLogin(
-                email = email,
-                password = password,
-                auth = auth,
-                onLoginSuccess = onLoginSuccess,
-                onError = { errorMessage = it }
-            )
-        },) {
+            onBack()
+        }) {
             Text(
                 text = "Назад",
                 style = ButtonsExtraBold,
