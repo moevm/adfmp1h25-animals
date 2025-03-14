@@ -59,11 +59,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.animals.R
+import com.example.animals.ui.theme.BoldGreen
+import com.example.animals.ui.theme.Brown
 import com.example.animals.ui.theme.DarkGreen
+import com.example.animals.ui.theme.ExtraBoldBrown
 import com.example.animals.ui.theme.ExtraBoldGreen
+import com.example.animals.ui.theme.ExtraBoldLightBeige
 import com.example.animals.ui.theme.InputMediumGreen
 import com.example.animals.ui.theme.LightBeige
 import com.example.animals.ui.theme.LightGreen
@@ -74,7 +79,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
-
+import java.io.File
 
 
 @Composable
@@ -85,26 +90,158 @@ fun ImagePickerField(
 ) {
     val context = LocalContext.current
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var showSourceDialog by remember { mutableStateOf(false) }
+    var cameraUri by remember { mutableStateOf<Uri?>(null) }
 
-    LaunchedEffect(clearImages) {
-        if (clearImages) {
-            selectedImages = emptyList()
-            onImagesSelected(emptyList()) // Уведомляем родительский компонент об очистке
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            Toast.makeText(context, "Требуется разрешение на камеру", Toast.LENGTH_SHORT).show()
         }
     }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
-    )
-
-    { uris: List<Uri> ->
-        if (uris.size <= 5) {
-            selectedImages = uris
-            onImagesSelected(uris)
-        } else {
-            // Показать сообщение об ошибке, если выбрано больше 5 изображений
-            Toast.makeText(context, "Можно выбрать не более 5 изображений", Toast.LENGTH_SHORT).show()
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
         }
+    }
+    // Обработчик очистки изображений
+    LaunchedEffect(clearImages) {
+        if (clearImages) {
+            selectedImages = emptyList()
+            onImagesSelected(emptyList())
+        }
+    }
+
+    // Создаем временный файл для фото
+    fun createTempFileUri(): Uri {
+        val storageDir = context.cacheDir
+        val file = File.createTempFile(
+            "IMG_${System.currentTimeMillis()}",
+            ".jpg",
+            storageDir
+        )
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+    }
+
+    // Лаунчер для камеры
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            cameraUri?.let { uri ->
+                selectedImages = selectedImages + uri
+                onImagesSelected(selectedImages)
+            }
+        }
+    }
+
+    // Лаунчер для галереи
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetMultipleContents()
+    ) { uris ->
+        if (uris.size + selectedImages.size <= 5) {
+            selectedImages = selectedImages + uris
+            onImagesSelected(selectedImages)
+        } else {
+            Toast.makeText(context, "Максимум 5 изображений", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Диалог выбора источника
+    if (showSourceDialog) {
+        AlertDialog(
+            onDismissRequest = { showSourceDialog = false },
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier.padding(vertical = 15.dp),
+            backgroundColor = LightBeige,
+//            title = {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(bottom = 16.dp) // Фиксированный отступ снизу заголовка
+//                ) {
+//                    Text(
+//                        text = "Выберите источник",
+//                        style = ExtraBoldGreen.copy(fontSize = 20.sp),
+//                        color = DarkGreen
+//                    )
+//                }
+//            },
+            text = {
+                Column {
+                    Text(
+                        text = "Выберите источник",
+                        style = ExtraBoldGreen.copy(fontSize = 20.sp),
+                        color = DarkGreen
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    TextButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = DarkGreen,
+                                shape = RoundedCornerShape(10.dp)
+                            ),
+                        onClick = {
+                            val uri = createTempFileUri()
+                            cameraUri = uri
+                            cameraLauncher.launch(uri)
+                            showSourceDialog = false
+                        }
+                    ) {
+                        Text(
+                            text = "Сделать фото",
+                            style = ExtraBoldLightBeige.copy(fontSize = 17.sp),
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    TextButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = DarkGreen,
+                                shape = RoundedCornerShape(10.dp)
+                            ),
+                        onClick = {
+                            galleryLauncher.launch("image/*")
+                            showSourceDialog = false
+                        }
+                    ) {
+                        Text(
+                            text = "Выбрать из галереи",
+                            style = ExtraBoldLightBeige.copy(fontSize = 17.sp),
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { showSourceDialog = false },
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    Text(
+                        text = "Отмена",
+                        style = ExtraBoldBrown.copy(
+                            fontSize = 18.sp,
+                        )
+                    )
+                }
+            }
+        )
     }
 
     Box(
@@ -112,9 +249,7 @@ fun ImagePickerField(
             .fillMaxWidth()
             .height(200.dp)
             .background(LightGreen, RoundedCornerShape(20.dp))
-            .clickable {
-                launcher.launch("image/*") // Запуск выбора изображений
-            },
+            .clickable { showSourceDialog = true },
         contentAlignment = Alignment.Center
     ) {
         if (selectedImages.isEmpty()) {
@@ -160,7 +295,6 @@ fun ImagePickerField(
         }
     }
 }
-
 @Composable
 fun NameField(query: String, onQueryChange: (String) -> Unit) {
     Box(

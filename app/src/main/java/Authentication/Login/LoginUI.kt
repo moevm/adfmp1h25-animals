@@ -33,7 +33,10 @@ fun LoginInputField(label: String, value: String, onValueChange: (String) -> Uni
             value = value,
             onValueChange = onValueChange,
             textStyle = InputMediumBrown,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next // Добавлено для перехода к паролю
+            ),
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
@@ -55,7 +58,7 @@ fun LoginInputField(label: String, value: String, onValueChange: (String) -> Uni
     }
 }
 
-// LoginUI.kt
+
 @Composable
 fun LoginPasswordField(
     label: String,
@@ -85,7 +88,7 @@ fun LoginPasswordField(
                 textStyle = InputMediumBrown,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Go
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = { onAuthTrigger() }

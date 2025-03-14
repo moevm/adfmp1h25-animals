@@ -1,5 +1,8 @@
 package AnimalCard
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import coil.compose.rememberAsyncImagePainter
 import com.example.animals.R
 import data.ImageSource
+import org.osmdroid.views.overlay.Marker
 
 
 @Composable
@@ -89,7 +93,6 @@ fun MapShortcut(coordinates: List<Double>) {
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp)
-            .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         AndroidView(
             factory = { context ->
@@ -101,23 +104,46 @@ fun MapShortcut(coordinates: List<Double>) {
                     setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK)
                     setMultiTouchControls(true)
                     controller.setZoom(17.0)
-                    controller.setCenter(GeoPoint(coordinates[0], coordinates[1])) // Координаты Москвы
 
-                    // Ограничение области масштабирования внутри видимой зоны
-                    this.setScrollableAreaLimitDouble(
-                        org.osmdroid.util.BoundingBox(
-                            55.85, 37.75, // Северо-западный угол
-                            55.65, 37.49  // Юго-восточный угол
-                        )
+                    // Получаем исходное изображение
+                    val originalBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.marker)
+
+                    // Задаем желаемый размер в пикселях (48dp)
+                    val density = context.resources.displayMetrics.density
+                    val targetSize = (32 * density).toInt()
+
+                    // Масштабируем изображение
+                    val scaledBitmap = Bitmap.createScaledBitmap(
+                        originalBitmap,
+                        targetSize,
+                        targetSize,
+                        false
                     )
 
-                    // Ограничения на масштаб
-                    this.minZoomLevel = 3.0
-                    this.maxZoomLevel = 25.0
+                    // Создаем маркер
+                    val marker = Marker(this).apply {
+                        position = GeoPoint(coordinates[0], coordinates[1])
+                        icon = BitmapDrawable(context.resources, scaledBitmap).apply {
+                            setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+                        }
+                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    }
+
+                    overlays.add(marker)
+                    controller.setCenter(marker.position)
+
+                    // Ограничения карты
+//                    setScrollableAreaLimitDouble(
+//                        org.osmdroid.util.BoundingBox(
+//                            55.85, 37.75,
+//                            55.65, 37.49
+//                        )
+//                    )
                 }
             },
             modifier = Modifier
                 .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 16.dp)
                 .clipToBounds()
         )
     }
